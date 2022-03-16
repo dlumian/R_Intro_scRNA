@@ -1,0 +1,216 @@
+---
+title: "R Intro"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+# Data Transformation
+Running this in a new project or on your own computer for the fist time you would need to run install.packages("tidyverse").  Thereafter you only need to turn on the package.  You will also be using data from the survival package for this exercise, so you need to load this package as well. 
+```{r}
+library(survival)
+library(tidyverse)
+```
+You will read in the pbc dataset from the survival package as a tibble.  Tibbles are a modern update of a dataframe.  You can also use View(pbc) to get an interactive spreadsheet.  Any action performed in View will not change the underlying dataset. To find more information on the pbc dataset you can use ?pbc or use the help tab in the right hand side and search pbc.  This gives more information on how the data was created and what is in each column.
+```{r}
+pbc <- as_tibble(pbc)
+pbc
+```
+A very useful multipurpose function in R is summary(x), where x can be one of any number of objects, including datasets, variables, and linear models, just to name a few. When used, the command provides summary data related to the individual object that was fed into it.
+```{r}
+summary(pbc)
+```
+You can sort your data using the arrange function.  This will sort the data based on age in ascending order with the youngest patient being the first of the dataset.
+```{r}
+pbc_arrange <- arrange(pbc, age) 
+pbc_arrange
+```
+You can also sort on descending order. You will again use age and this time the oldest patient will be the first.
+```{r}
+pbc_arrange <- arrange(pbc, desc(age))
+pbc_arrange
+```
+This is a large dataset, let's say you want to subset the data to just the columns of information you need for your analysis. You can use the select function. Let's say you are interested in just the patient id, sex and age.
+```{r}
+pbc_select <- select(pbc, id, sex, age)
+pbc_select
+```
+For reference you can use the "-" to select every column but the ones listed
+```{r}
+pbc_select <- select(pbc, -id, -sex, -age)
+pbc_select
+```
+You may only be interested in the male patients for this dataset. You can use the filter function to select only rows where sex is equal to "m" for male.
+```{r}
+pbc_filter <- filter(pbc, sex=="m") 
+pbc_filter
+```
+You can also filter based on if the patients are older than 70. 
+```{r}
+pbc_filter <- filter(pbc, age > 70)
+pbc_filter
+```
+You may be interested in computing new information from your data. For instance the data in the ast column (aspartate aminotransferase), is in Units/ml.  You can create a new column (called new_val here) that calculates Units/ul.
+
+```{r}
+pbc_mutate <- mutate(pbc, new_val=ast/1000) 
+pbc_mutate
+```
+Once you have calculated new information in our table you may want to write the table to a file.  You can use the write.table function for this. The file will show up in the files tab to the right with the name "pbc_mutate".
+```{r}
+write.table(pbc_mutate,"pbc_mutate.txt",row.names=F,sep="\t")
+```
+You can use the summarize function to summarize the data in specific ways. Here you are outputting a table with mean age of the pbc patients.
+```{r}
+ave_age <-summarize(pbc, new_col = mean(age))
+ave_age
+```
+You can also group the data based on a specified variable or group of variables.
+```{r}
+group_by_sex <- group_by(pbc,sex)
+group_by_sex
+```
+Interestingly nothing changes about the data that can be seen in the table. You can use the groups function to look at how the data is. You can always use View(pbc) to look at the original dataset. 
+```{r}
+groups(group_by_sex)
+groups(pbc)
+```
+Group by is particularly helpful when used in conjunction other functions such as the previously used summarize function.  You can combine the group by and summarize function to calculate the mean age of males versus females. You could do this in two steps but you don't need the intermediate data so a pipe "%>%" can be used. A pipe is like saying do this then immediately follow with this next function.
+```{r}
+pbc_final <- pbc %>% group_by(sex) %>% summarize(new_col = mean(age))
+pbc_final
+```
+# Data Visualization with ggplot
+
+Plotting a single discrete variable(sex) as a bar plot.  Here the y-axis is the number of patients that are male versus female.
+```{r}
+ggplot(pbc, aes(x=sex)) + geom_bar()
+```
+
+Plotting a single continuous variable (age) as a histogram. Here the y-axis is the number of patients in each age bin.
+```{r}
+ggplot(pbc, aes(x=age)) + geom_histogram()
+```
+
+ggplot gives a warning that the default binwidth may not be the most suitable for our data.  We can specific binwidth by adding it to the histogram function options.
+```{r}
+ggplot(pbc, aes(x=age)) + geom_histogram(binwidth=5)
+```
+
+Histograms are easier to create when the underlying data distribution is already known, making it harder to use for exploration.  It is also a count based method so comparing across datasets of differing numbers would be difficult. A density plot is similar to a histogram. Modify x in command below to create a density plot for age.
+```{r}
+ggplot(pbc, aes(age)) + geom_density()
+```
+
+Plotting discrete (sex) and continuous (age) variables as a boxplot plot.
+```{r}
+ggplot(pbc, aes(x= sex, y=age)) + geom_boxplot()
+```
+
+Plotting two continuous variables (age and platelet count) as a scatter plot.
+```{r}
+ggplot(pbc, aes(x = age, y = platelet)) + geom_point()
+```
+
+Revisiting the layering concept, we can add a regression line to our previous plot by just adding that function to the previous command.  We want to plot a linear regression so we need to specify that in the method option. 
+```{r}
+ggplot(pbc, aes(x = age, y = platelet)) + geom_point() + geom_smooth(method=lm)
+```
+
+We can create a scatter plot with age versus platelet count and add color to the points based on sex.  This will also be passed to the regression line so there will now be a separate regression line for male and female.
+```{r}
+ggplot(pbc, aes(x=age, y=platelet, color=sex)) + geom_point() + geom_smooth(method=lm)
+```
+
+The points and lines overlap to some degree so it is difficult to see if there are any differences.  We can instead automatically generate a graph for each value in a discrete variable using the facet wrap function.
+```{r}
+ggplot(pbc, aes(x=age, y=platelet)) + geom_point() + geom_smooth(method = lm) + facet_wrap(vars(sex), nrow=1)
+```
+
+Let's say we want to create density plots for all of the clinical data to get a quick look at data distribution.  We could utilize the facet wrap command but first we would need to reshape our data to a long format.  Right now the data is in a wide format in which each patient is a single row with each clinical and phenotypic variables in a separate column. We can select the id, sex, and continuous clinical variables and then use gather to move all of these variables minus sex and id into a singular key column with the corresponding value in a value column. 
+```{r}
+pbc_long <- pbc %>% select(id,sex,bili:platelet) %>% gather(key, value, -sex, -id)
+pbc_long
+```
+Once we have reshaped our data in this format we can plot all of the continuous variables as density plots in a single command. 
+```{r}
+ggplot(pbc_long , aes(value)) + geom_density() + facet_wrap(vars(key), scales = "free") 
+```
+
+We can save the last ggplot we created with the ggsave function.
+```{r}
+ggsave("facet_density.png")
+```
+# Bonus Bits 
+Common biological data visualizations
+
+Let's create a PCA plot. We will utilize the ggfortify package, a collection of data visualization tools for statistical analysis results, to handle the graphing of our PCA analysis object. As with the tidyverse package in a new project or on your own computer for the fist time you would need to run install.packages("ggfortify"). We can then turn on or load our library.
+```{r}
+library(ggfortify)
+```
+We can load precomputed data directly from [GEO](https://www.ncbi.nlm.nih.gov/geo/
+) (the gene expression omnibus).  Let's use RNAseq data from 3 adult and 4 embryonic mouse cerebral cortex samples.  This dataset (GSE39866) was generated to track transcriptomic changes during brain development. The R package deseq2 was used to normalize and then calculate differential expression for this dataset.   
+We will use the normalized gene counts table for our PCA plot.  
+```{r}
+vst <-read_tsv("ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE39nnn/GSE39866/suppl/GSE39866_Mouse.VarianceStabilized.Datagene.txt.gz")
+vst
+```
+The first thing we need to do is transform our dataset to have our genes in the columns and each sample as a row.  We can use the simple t command for that.
+```{r}
+vst_t <- vst %>% column_to_rownames("gene_id") %>% t %>% data.frame
+vst_t
+```
+We can then use the principle components function from the core stats package to create a PCA object.
+```{r}
+vst_pca <- prcomp(vst_t)
+```
+We can create a column with group names by parsing the first 5 letters of each sample name.  
+```{r}
+vst_t <- vst_t %>% rownames_to_column("sample_id")  %>% mutate(group=substr(sample_id, start = 1, stop = 5))
+vst_t %>% select(group)
+```
+Now we can use the ggfortify package function autoplot to plot our pca plot using both the vst_pca object and the group information in the data frame as well.
+```{r}
+autoplot(vst_pca, data = vst_t, colour = 'group')
+```
+
+We will use a package called pheatmap, for making pretty heatmaps.  As with the tidyverse package in a new project or on your own computer for the fist time you would need to run install.packages("pheatmap"). We can then turn on or load our library.
+```{r}
+library(pheatmap)
+```
+We will use the same vst dataset as with the previous PCA example.  First we will select some interesting genes.  These could be genes from a previous screen or experiment that were of interest. In this particular case we know these genes involved in development.  We will then set our row names as the gene ids because by default the row names in the table will be the row names for the heatmap.
+```{r}
+gene_select <- vst %>% filter(gene_id %in% c("Mobp","Ttr","Caly", "Vax1")) %>% data.frame
+rownames(gene_select) <- gene_select$gene_id
+gene_select
+```
+Once our data manipulations are done we can use the pheatmap function.  We are deselecting gene id as the heatmap function can only take numerical values.
+```{r}
+gene_select %>% select(-gene_id) %>% pheatmap()
+```
+
+
+Let's stick with the mouse brain dataset. The differential results from deseq2 has been preloaded into this project.  Let's read this data into R.
+```{r}
+exp <- read_csv("AMvsEM_deseq2_results.csv") 
+exp
+```
+A volcano plot is a specific type of scatter plot looking at the log2 fold change versus the -log10 of the adjusted p value with the points colored according to the log10 of base mean expression values.  Replace the x's with the correct variables below.
+```{r}
+ggplot(data=exp, aes(x=log2FoldChange, y=-log10(padj), color=log10(baseMean)))  + geom_point(shape=1, size=1.5) + scale_color_gradient(low="green",high="red")
+```
+
+The frustrating thing about a volcano plot is that we don't know which points correspond to what genes.  We could overlay a gene name onto each point but that would be impossible to read with ~ 20,000 genes. We will instead use another package called plotly to create an interactive plot. Once the plot is created we can hover over a point and the gene name will appear.  Remember with new project or on your own computer for the fist time you would need to run install.packages("plotly"). Load the package
+```{r}
+library(plotly)
+```
+Now we can create our interactive volcano.  Notice that the syntax is different in plotly versus ggplot.
+```{r}
+plot_ly(data = exp, x = ~log2FoldChange, y = ~-log10(padj), color=~log10(baseMean), type = 'scatter', mode='markers', text= ~gene_id)
+```
+
+DONE!
