@@ -1,0 +1,127 @@
+---
+title: "Advanced_R_Functionality"
+author: "Daniel Lumian"
+date: "4/4/2022"
+output: html_document
+---
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+R contians several built-in datasets, which are useful for exploring R functionality. 
+
+This notebook will use the iris dataset which contains 150 iris observations of three species.
+Each row contains informaiton on Sepal.Length, Sepal.Width, Petal.Length, Petal.Width and Species.
+
+This notebook assumes you have completed the Intro_R.Rmd notebook and can install R packages. 
+```{r}
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+```
+
+To start, let's view the data. (Note it is a built-in dataset so it does not need to be loaded).
+
+```{r}
+iris
+```
+
+Next, let's summarize the data.
+```{r}
+summary(iris)
+```
+
+Let's check how many unique species there are and how many observations for each.
+```{r}
+unique(iris$Species)
+table(iris$Species)
+```
+
+We can collect the column names with the colnames function and assign the results to a new variable.
+We can then check the type of data stored with typeof and the length of items.
+```{r}
+my_cols = colnames(iris)
+my_cols
+typeof(my_cols)
+length(my_cols)
+```
+
+Let's remove Species from our list. 
+We can explictly remove the item with the below code.
+```{r}
+my_cols = my_cols[my_cols != "Species"]
+my_cols
+length(my_cols)
+```
+
+Create a loop and iterate over the list.
+Let's look at how for loops work in R. This loop will print out each column name.
+```{r}
+for (my_col in my_cols){
+  cat('We have a column for: ', my_col, '\n')
+}
+```
+
+This more advanced loop will print out the column name and mean value.
+Note the means should match those obtained by using summarize above,
+the purpose of the demo is to see how the loop works. 
+```{r}
+for (my_col in my_cols){
+  col_mean = mean(iris[[my_col]])
+  cat('Mean for column ', my_col, 'is: ', col_mean, '\n')
+}
+```
+
+R also has functionality to gather all the means from a dataset for numerical columns only.
+This summarise_if function does just that! 
+```{r}
+my_means = summarise_if(iris, is.numeric, mean)
+my_means
+```
+#### Visualizations ####
+R is also great for visualizations! Let's make a quick bar chart showing the count of each type of flower. 
+```{r}
+ggplot(data = iris, aes(x=Species)) + geom_bar()
+```
+That plot works, but is a bit boring. R gives you a great deal of control to customize plots.
+Let's add some color and try it again! 
+```{r}
+ggplot(data = iris, aes(x=Species, fill=Species)) + geom_bar() +
+  scale_fill_manual(values = c('lightblue', 'navy', 'steelblue'))
+```
+We can also create scatter plots of the data. Let's start by looking at sepal length and width.
+```{r}
+point1 = ggplot(data=iris, aes(x=Sepal.Length, y=Sepal.Width, color=Species))
+point1 + geom_point()
+```
+
+We can repeat the exercise with petal length and width with minor edits to the code.
+```{r}
+point1 = ggplot(data=iris, aes(x=Petal.Length, y=Petal.Width, color=Species))
+point1 + geom_point() 
+```
+
+Sometimes, R wants data in a long-format instead of a wide-format. 
+We can accomplish this by melting the dataframe.
+Notice the melted dataframe has fewer columns but more rows. 
+```{r}
+iris_melted <- melt(iris, id.vars="Species")
+iris_melted
+```
+
+With our new melted dataframe, we can create a grouped bar plot to visualize each column
+by its species type.
+```{r}
+bar1 = ggplot(data=iris_melted, aes(x=Species, y=value, fill=variable))
+bar1 + geom_bar(stat="identity", position="dodge") 
+```
+Once again, R give us control over aspects of the graph. Let's alter the colors and replot our data.
+```{r}
+bar1 = ggplot(data=iris_melted, aes(x=Species, y=value, fill=variable))
+bar1 + geom_bar(stat="identity", position="dodge") +
+  scale_fill_manual(values = c("steelblue", "limegreen", "purple", "thistle"))
+```
+
+
+####DONE###

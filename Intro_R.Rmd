@@ -199,7 +199,7 @@ Let's stick with the mouse brain dataset. The differential results from deseq2 h
 exp <- read_csv("AMvsEM_deseq2_results.csv") 
 exp
 ```
-A volcano plot is a specific type of scatter plot looking at the log2 fold change versus the -log10 of the adjusted p value with the points colored according to the log10 of base mean expression values.  Replace the x's with the correct variables below.
+A volcano plot is a specific type of scatter plot looking at the log2 fold change versus the -log10 of the adjusted p value with the points colored according to the log10 of base mean expression values.
 ```{r}
 ggplot(data=exp, aes(x=log2FoldChange, y=-log10(padj), color=log10(baseMean)))  + geom_point(shape=1, size=1.5) + scale_color_gradient(low="green",high="red")
 ```
@@ -212,5 +212,6 @@ Now we can create our interactive volcano.  Notice that the syntax is different 
 ```{r}
 plot_ly(data = exp, x = ~log2FoldChange, y = ~-log10(padj), color=~log10(baseMean), type = 'scatter', mode='markers', text= ~gene_id)
 ```
+
 
 DONE!
