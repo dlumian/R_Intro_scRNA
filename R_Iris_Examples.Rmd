@@ -124,6 +124,8 @@ bar1 + geom_bar(stat="identity", position="dodge") +
 ```
 
 # Decision Tree Model # 
+
+We will need some additional packages for Machine Learning. 
 ```{r}
 install.packages("rpart.plot")
 install.packages("yardstick")
@@ -134,31 +136,42 @@ library(yardstick)
 ```
 
 ## Train-Test Split ##
-
+We will create a train-test split of the data, so that we have data to train the model on
+and data to test the performance with.
 ```{r}
 split1<- sample(c(rep(0, 0.7 * nrow(iris)), rep(1, 0.3 * nrow(iris))))
 train <- iris[split1 == 0, ]            
 test <- iris[split1 == 1, ]
 ```
 
+Next, we train the model. We are predicting Species from all other columns in the dataset.
 ```{r}
 model <- rpart(Species ~ ., data = train, method = "class")
 model
 ```
+
+We can plot the decisions made by the model.
 ```{r}
 rpart.plot(model)
 ```
+
+We can also predict with the model on the test dataset. 
 ```{r}
 preds <- predict(model, newdata = test, type = "class")
 preds
 ```
+
+This will append the predictions to the test dataset. 
 ```{r}
 test$preds = preds
 ```
 
+We will use a confusion matrix to see how our model preforms.
 ```{r}
 confusionMatrix(test$Species, preds)
 ```
+
+We can plot the confusion matrix for a better visualization of the results. 
 ```{r}
 cm <- conf_mat(test, Species, preds)
 
