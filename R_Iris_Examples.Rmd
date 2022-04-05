@@ -123,5 +123,48 @@ bar1 + geom_bar(stat="identity", position="dodge") +
   scale_fill_manual(values = c("steelblue", "limegreen", "purple", "thistle"))
 ```
 
+# Decision Tree Model # 
+```{r}
+install.packages("rpart.plot")
+install.packages("yardstick")
+library(rpart)
+library(rpart.plot)
+library(caret)
+library(yardstick)
+```
+
+## Train-Test Split ##
+
+```{r}
+split1<- sample(c(rep(0, 0.7 * nrow(iris)), rep(1, 0.3 * nrow(iris))))
+train <- iris[split1 == 0, ]            
+test <- iris[split1 == 1, ]
+```
+
+```{r}
+model <- rpart(Species ~ ., data = train, method = "class")
+model
+```
+```{r}
+rpart.plot(model)
+```
+```{r}
+preds <- predict(model, newdata = test, type = "class")
+preds
+```
+```{r}
+test$preds = preds
+```
+
+```{r}
+confusionMatrix(test$Species, preds)
+```
+```{r}
+cm <- conf_mat(test, Species, preds)
+
+autoplot(cm, type = "heatmap") +
+  scale_fill_gradient(low = "steelblue", high = "darkred")
+```
+
 
 ####DONE###
