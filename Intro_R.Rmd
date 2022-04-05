@@ -54,7 +54,7 @@ You can also filter based on if the patients are older than 70.
 pbc_filter <- filter(pbc, age > 70)
 pbc_filter
 ```
-You may be interested in computing new information from your data. For instance the data in the ast column (aspartate aminotransferase), is in Units/ml.  You can create a new column (called new_val here) that calculates Units/ul.
+You may be interested in computing new information from your data. For instance the data in the ast column (aspartate aminotransferase), is in Units/ml (milliliter).  You can create a new column (called new_val here) that calculates Units/ul (microliter).
 
 ```{r}
 pbc_mutate <- mutate(pbc, new_val=ast/1000) 
@@ -145,6 +145,39 @@ We can save the last ggplot we created with the ggsave function.
 ```{r}
 ggsave("facet_density.png")
 ```
+
+# Basic Statistics
+
+R is a great tool for statistics as well. Here we will explore a few basic analysis options.
+-Correlation
+-t-tests
+
+```{r}
+cor.test(pbc$copper, pbc$albumin)
+```
+
+Let's visualize the relationsip!
+```{r}
+ggplot(pbc, aes(x=copper, y=albumin)) + geom_point() + geom_smooth(method=lm)
+```
+
+Next, lets create two vectors for an independent samples t-test.
+We will compare males and females on age. 
+
+```{r}
+male_ages = pbc$age[pbc$sex=='m']
+female_ages = pbc$age[pbc$sex=='f']
+t.test(male_ages, female_ages)
+```
+
+Let's visualize the results with a bar graph.
+```{r}
+ggplot(pbc, aes(x=sex, y=age)) + 
+  geom_bar(stat = "summary", fun.y="mean") +
+  theme_bw()
+```
+
+
 # Bonus Bits 
 Common biological data visualizations
 
