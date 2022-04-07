@@ -126,9 +126,11 @@ bar1 + geom_bar(stat="identity", position="dodge") +
 # Decision Tree Model # 
 
 We will need some additional packages for Machine Learning. 
+Remember if you haven't installed the package before, use:
+  install.packages("rpart.plot")
+  install.packages("yardstick")
+  install.packages("caret")
 ```{r}
-install.packages("rpart.plot")
-install.packages("yardstick")
 library(rpart)
 library(rpart.plot)
 library(caret)

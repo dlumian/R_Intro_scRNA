@@ -24,6 +24,26 @@ A very useful multipurpose function in R is summary(x), where x can be one of an
 ```{r}
 summary(pbc)
 ```
+You can also select single columns with a `$`.
+```{r}
+pbc$copper
+```
+You can use the `$` annotation to get summary information as well. 
+Note, if missing data is in the column, result will be NA unless na.rm is specified as TRUE. 
+```{r}
+mean(pbc$copper, na.rm = TRUE)
+```
+Other useful summary stats: min, max.
+```{r}
+min(pbc$copper, na.rm = TRUE)
+max(pbc$copper, na.rm = TRUE)
+range(pbc$copper, na.rm = TRUE)
+```
+Data columns also have types and you can access this information with `typeof`.
+```{r}
+typeof(pbc$copper)
+typeof(pbc$ast)
+```
 You can sort your data using the arrange function.  This will sort the data based on age in ascending order with the youngest patient being the first of the dataset.
 ```{r}
 pbc_arrange <- arrange(pbc, age) 
@@ -101,7 +121,7 @@ ggplot gives a warning that the default binwidth may not be the most suitable fo
 ggplot(pbc, aes(x=age)) + geom_histogram(binwidth=5)
 ```
 
-Histograms are easier to create when the underlying data distribution is already known, making it harder to use for exploration.  It is also a count based method so comparing across datasets of differing numbers would be difficult. A density plot is similar to a histogram. Modify x in command below to create a density plot for age.
+Histograms are easier to create when the underlying data distribution is already known, making it harder to use for exploration.  It is also a count based method so comparing across datasets of differing numbers would be difficult. A density plot is similar to a histogram. 
 ```{r}
 ggplot(pbc, aes(age)) + geom_density()
 ```
@@ -149,14 +169,18 @@ ggsave("facet_density.png")
 # Basic Statistics
 
 R is a great tool for statistics as well. Here we will explore a few basic analysis options.
--Correlation
--t-tests
+- Correlation
+  + Measure of how well two variables hang together
+  + Ranges from 1 to -1
+- t-tests
+  + Compares means of two groups
+Note, R has many more advanced statistical analyses, these are just two simple examples.
 
 ```{r}
 cor.test(pbc$copper, pbc$albumin)
 ```
 
-Let's visualize the relationsip!
+Let's visualize the relationship!
 ```{r}
 ggplot(pbc, aes(x=copper, y=albumin)) + geom_point() + geom_smooth(method=lm)
 ```
@@ -173,8 +197,7 @@ t.test(male_ages, female_ages)
 Let's visualize the results with a bar graph.
 ```{r}
 ggplot(pbc, aes(x=sex, y=age)) + 
-  geom_bar(stat = "summary", fun.y="mean") +
-  theme_bw()
+  geom_bar(stat = "summary", fun.y="mean")
 ```
 
 
