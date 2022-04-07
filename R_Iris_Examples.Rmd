@@ -9,10 +9,10 @@ output: html_document
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-R contians several built-in datasets, which are useful for exploring R functionality. 
+R contains several built-in datasets, which are useful for exploring R functionality. 
 
 This notebook will use the iris dataset which contains 150 iris observations of three species.
-Each row contains informaiton on Sepal.Length, Sepal.Width, Petal.Length, Petal.Width and Species.
+Each row contains information on Sepal.Length, Sepal.Width, Petal.Length, Petal.Width and Species.
 
 This notebook assumes you have completed the Intro_R.Rmd notebook and can install R packages. 
 ```{r}
@@ -39,7 +39,7 @@ table(iris$Species)
 ```
 
 We can collect the column names with the colnames function and assign the results to a new variable.
-We can then check the type of data stored with typeof and the length of items.
+We can then check the type of data stored with `typeof` and the length of items.
 ```{r}
 my_cols = colnames(iris)
 my_cols
@@ -48,7 +48,7 @@ length(my_cols)
 ```
 
 Let's remove Species from our list. 
-We can explictly remove the item with the below code.
+We can explicitly remove the item with the below code.
 ```{r}
 my_cols = my_cols[my_cols != "Species"]
 my_cols
