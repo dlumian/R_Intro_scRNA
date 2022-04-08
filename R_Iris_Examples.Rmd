@@ -15,6 +15,9 @@ This notebook will use the iris dataset which contains 150 iris observations of 
 Each row contains information on Sepal.Length, Sepal.Width, Petal.Length, Petal.Width and Species.
 
 This notebook assumes you have completed the Intro_R.Rmd notebook and can install R packages. 
+
+Execute chunks by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
 ```{r}
 library(dplyr)
 library(ggplot2)
