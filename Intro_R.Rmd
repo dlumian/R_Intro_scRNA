@@ -33,7 +33,7 @@ Note, if missing data is in the column, result will be NA unless na.rm is specif
 ```{r}
 mean(pbc$copper, na.rm = TRUE)
 ```
-Other useful summary stats: min, max.
+Other useful summary stats: min, max, and range.
 ```{r}
 min(pbc$copper, na.rm = TRUE)
 max(pbc$copper, na.rm = TRUE)
