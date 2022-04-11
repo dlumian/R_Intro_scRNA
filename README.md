@@ -22,6 +22,8 @@ An R Cloud Studio Project loaded from this repository can be found at: `https://
     + R project file for loading relevant files into an R workspace
 - scRNA_RIntro_Apr2022.pptx
     + Powerpoint presentation to accompany this material
+- scRNA_RIntro_Apr2022.pdf
+    + PDF version of Powerpoint presentation to accompany this material (can be viewed in GitHub)
 
 ## To load into a new R Cloud Workspace:
 
@@ -36,4 +38,4 @@ An R Cloud Studio Project loaded from this repository can be found at: `https://
 - Follow tutorial by running each code chunk in succession
 - For additional examples, open R_Iris_Examples.Rmd and run cell chunks
 
-## See the pptx file for additional information
+## See the pdf or pptx file for additional information
