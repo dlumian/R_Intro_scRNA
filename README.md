@@ -4,7 +4,7 @@ Intro to R for research scientists.
 
 The repo is designed so that can it be run locally or loaded into R Cloud Studio.
 
-An R Cloud Studio Project loaded from this repository can be found at: `https://rstudio.cloud/project/3875044`.
+An R Cloud Studio Project loaded from this repository can be found at: [https://rstudio.cloud/project/3875044](https://rstudio.cloud/project/3875044).
 
 ## Important Files:
 - AMvsEM_deseq2_results.csv
