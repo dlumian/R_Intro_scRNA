@@ -31,6 +31,7 @@ pbc$copper
 You can use the `$` annotation to get summary information as well. 
 Note, if missing data is in the column, result will be NA unless na.rm is specified as TRUE. 
 ```{r}
+mean(pbc$copper)
 mean(pbc$copper, na.rm = TRUE)
 ```
 Other useful summary stats: min, max, and range.
@@ -199,7 +200,20 @@ Let's visualize the results with a bar graph.
 ggplot(pbc, aes(x=sex, y=age)) + 
   geom_bar(stat = "summary", fun.y="mean")
 ```
-
+Add error bars to the plot!
+Begin by calculating mean and standard deviation.
+```{r}
+age_barplot_data <- pbc %>% group_by(sex) %>% summarize(age_M = mean(age), age_SD = sd(age))
+age_barplot_data
+```
+Create the plot with the new dataset.
+```{r}
+ggplot(age_barplot_data, aes(x=sex, y=age_M, fill=sex)) + 
+  geom_bar(stat="identity", position="dodge") +
+  geom_errorbar(data = age_barplot_data, 
+      aes(ymin = age_M - age_SD, ymax = age_M + age_SD, y = age_M),
+        position = position_dodge(width = .9))
+```
 
 # Bonus Bits 
 Common biological data visualizations
